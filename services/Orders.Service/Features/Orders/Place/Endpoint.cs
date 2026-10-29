@@ -1,5 +1,7 @@
 using System.Text.Json;
 using FastEndpoints;
+using OrderFlow.Contracts.Events;
+using OrderFlow.Contracts.Events.Shared;
 using Orders.Service.Data;
 using Orders.Service.Data.Entities;
 
@@ -32,24 +34,25 @@ public class PlaceOrderEndpoint(ApplicationDbContext context) : Endpoint<PlaceOr
                 PaymentCompleted = false
             }
         };
+        
+        var timestamp = DateTimeOffset.UtcNow;
 
-        var orderPlacedEvent = new
-        {
-            EventType = "OrderPlaced",
-            OrderId = order.Id,
-            CorrelationId = order.Id,
-            Timestamp = DateTime.UtcNow,
-            order.CustomerId,
-            order.TotalAmount,
-            Lines = order.OrderLines.Select(l => new { l.Sku, l.Quantity })
-        };
+        var orderPlacedEvent = new OrderPlaced(EventId: Guid.NewGuid(),
+            OrderId: order.Id,
+            Timestamp: timestamp,
+            CustomerId: order.CustomerId,
+            Lines: order.OrderLines
+                .Select(line => new OrderLineItem(line.Sku, line.Quantity))
+                .ToList(),
+            TotalAmount: order.TotalAmount);
 
         var outboxMessage = new OutboxMessage
         {
-            EventId = Guid.NewGuid(),
-            Topic = "orders.events",
+            EventId = orderPlacedEvent.EventId,
+            Topic = "persistent://public/default/order-events",
+            PartitionKey = order.Id.ToString(),
             Payload = JsonSerializer.Serialize(orderPlacedEvent),
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = timestamp.UtcDateTime
         };
 
         context.Add(order);
