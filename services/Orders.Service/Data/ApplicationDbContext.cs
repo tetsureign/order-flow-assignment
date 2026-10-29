@@ -20,12 +20,14 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.HasDefaultSchema("orderflow_orders");
+
         modelBuilder.Entity<Order>(entity =>
         {
             entity.HasKey(o => o.Id);
             entity.Property(o => o.CustomerId).HasMaxLength(100).IsRequired();
             entity.Property(o => o.TotalAmount).HasPrecision(10, 2).IsRequired();
-            entity.Property(o => o.Status).IsRequired();
+            entity.Property(o => o.Status).IsRequired().HasConversion<string>();
             entity.Property(o => o.CreatedAt).IsRequired();
             entity.Property(o => o.UpdatedAt).IsRequired();
 

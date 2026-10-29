@@ -17,6 +17,7 @@ public class GetOrderEndpoint(ApplicationDbContext context) : Endpoint<GetOrderB
     {
         var order = await context.Orders
             .Include(o => o.OrderLines)
+            .Include(o => o.SagaState)
             .FirstOrDefaultAsync(o => o.Id.ToString() == req.OrderId, ct);
 
         if (order == null)
@@ -30,6 +31,11 @@ public class GetOrderEndpoint(ApplicationDbContext context) : Endpoint<GetOrderB
             OrderId = order.Id.ToString(),
             CustomerId = order.CustomerId,
             Status = order.Status.ToString(),
+            TotalAmount = order.TotalAmount,
+            ReservationCompleted = order.SagaState?.ReservationCompleted ?? false,
+            PaymentCompleted = order.SagaState?.PaymentCompleted ?? false,
+            CreatedAt = order.CreatedAt,
+            UpdatedAt = order.UpdatedAt,
             Lines = order.OrderLines.Select(l => new OrderLineSummary
             {
                 Sku = l.Sku,

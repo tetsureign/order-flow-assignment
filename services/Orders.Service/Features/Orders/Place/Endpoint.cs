@@ -37,6 +37,8 @@ public class PlaceOrderEndpoint(ApplicationDbContext context) : Endpoint<PlaceOr
         {
             EventType = "OrderPlaced",
             OrderId = order.Id,
+            CorrelationId = order.Id,
+            Timestamp = DateTime.UtcNow,
             order.CustomerId,
             order.TotalAmount,
             Lines = order.OrderLines.Select(l => new { l.Sku, l.Quantity })
@@ -58,7 +60,7 @@ public class PlaceOrderEndpoint(ApplicationDbContext context) : Endpoint<PlaceOr
             new PlaceOrderResponse
             {
                 OrderId = order.Id.ToString(),
-                CorrelationId = outboxMessage.EventId.ToString(),
+                CorrelationId = order.Id.ToString(),
                 Status = order.Status.ToString()
             },
             cancellation: ct
