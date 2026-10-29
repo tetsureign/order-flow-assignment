@@ -1,0 +1,20 @@
+services:
+  inventory-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: inventory_db
+      POSTGRES_USER: inventory_user
+      POSTGRES_PASSWORD: secretpassword
+    ports:
+      - "5433:5432"
+
+  inventory-service:
+    build:
+      context: ../..
+      dockerfile: services/Inventory.Service/Dockerfile
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=inventory-db;Database=inventory_db;Username=inventory_user;Password=secretpassword"
+      Pulsar__ServiceUrl: "pulsar://pulsar:6650"
+      ASPNETCORE_HTTP_PORTS: "5002"
+    depends_on:
+      - inventory-db
