@@ -20,12 +20,12 @@ public class PlaceOrderEndpoint(ApplicationDbContext context) : Endpoint<PlaceOr
             CustomerId = req.CustomerId,
             TotalAmount = req.Lines.Sum(i => i.Quantity * i.UnitPrice),
             Status = OrderStatus.Pending,
-            OrderLines = [.. req.Lines.Select(i => new OrderLine
+            OrderLines = req.Lines.Select(i => new OrderLine
             {
                 Sku = i.Sku,
                 Quantity = i.Quantity,
                 UnitPrice = i.UnitPrice
-            })],
+            }).ToList(),
             SagaState = new OrderSagaState
             {
                 ReservationCompleted = false,
