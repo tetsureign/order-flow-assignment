@@ -15,5 +15,6 @@ services:
     environment:
       ConnectionStrings__DefaultConnection: "Host=orders-db;Database=orders_db;Username=orders_user;Password=secretpassword"
       Pulsar__ServiceUrl: "pulsar://pulsar:6650"
+      ASPNETCORE_HTTP_PORTS: "5001"
     depends_on:
       - orders-db
