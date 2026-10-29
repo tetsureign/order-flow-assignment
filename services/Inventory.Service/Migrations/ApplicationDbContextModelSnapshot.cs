@@ -57,6 +57,11 @@ namespace Inventory.Service.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("event_id");
 
+                    b.Property<string>("PartitionKey")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("partition_key");
+
                     b.Property<string>("Payload")
                         .IsRequired()
                         .HasColumnType("jsonb")

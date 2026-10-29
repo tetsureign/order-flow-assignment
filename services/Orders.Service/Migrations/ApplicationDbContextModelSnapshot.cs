@@ -17,6 +17,7 @@ namespace Orders.Service.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasDefaultSchema("orderflow_orders")
                 .HasAnnotation("ProductVersion", "10.0.14")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
@@ -36,7 +37,7 @@ namespace Orders.Service.Migrations
                     b.HasKey("EventId")
                         .HasName("pk_inbox_messages");
 
-                    b.ToTable("inbox_messages", (string)null);
+                    b.ToTable("inbox_messages", "orderflow_orders");
                 });
 
             modelBuilder.Entity("Orders.Service.Data.Entities.Order", b =>
@@ -56,8 +57,9 @@ namespace Orders.Service.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("customer_id");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("integer")
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text")
                         .HasColumnName("status");
 
                     b.Property<decimal>("TotalAmount")
@@ -72,7 +74,7 @@ namespace Orders.Service.Migrations
                     b.HasKey("Id")
                         .HasName("pk_orders");
 
-                    b.ToTable("orders", (string)null);
+                    b.ToTable("orders", "orderflow_orders");
                 });
 
             modelBuilder.Entity("Orders.Service.Data.Entities.OrderLine", b =>
@@ -109,7 +111,7 @@ namespace Orders.Service.Migrations
                     b.HasIndex("OrderId")
                         .HasDatabaseName("ix_order_lines_order_id");
 
-                    b.ToTable("order_lines", (string)null);
+                    b.ToTable("order_lines", "orderflow_orders");
                 });
 
             modelBuilder.Entity("Orders.Service.Data.Entities.OrderSagaState", b =>
@@ -133,7 +135,7 @@ namespace Orders.Service.Migrations
                     b.HasKey("OrderId")
                         .HasName("pk_order_saga_states");
 
-                    b.ToTable("order_saga_states", (string)null);
+                    b.ToTable("order_saga_states", "orderflow_orders");
                 });
 
             modelBuilder.Entity("Orders.Service.Data.Entities.OutboxMessage", b =>
@@ -152,6 +154,11 @@ namespace Orders.Service.Migrations
                     b.Property<Guid>("EventId")
                         .HasColumnType("uuid")
                         .HasColumnName("event_id");
+
+                    b.Property<string>("PartitionKey")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("partition_key");
 
                     b.Property<string>("Payload")
                         .IsRequired()
@@ -175,7 +182,7 @@ namespace Orders.Service.Migrations
                         .IsUnique()
                         .HasDatabaseName("ix_outbox_messages_event_id");
 
-                    b.ToTable("outbox_messages", (string)null);
+                    b.ToTable("outbox_messages", "orderflow_orders");
                 });
 
             modelBuilder.Entity("Orders.Service.Data.Entities.OrderLine", b =>

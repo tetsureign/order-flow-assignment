@@ -67,6 +67,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.Property(m => m.Id).UseIdentityColumn();
             entity.Property(m => m.EventId).IsRequired();
             entity.HasIndex(m => m.EventId).IsUnique();
+            entity.Property(m => m.PartitionKey).IsRequired();
             entity.Property(m => m.Topic).HasMaxLength(255).IsRequired();
             entity.Property(m => m.Payload).HasColumnType("jsonb").IsRequired();
             entity.Property(m => m.CreatedAt).IsRequired();
