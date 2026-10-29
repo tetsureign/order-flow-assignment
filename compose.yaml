@@ -1,3 +1,5 @@
 include:
   - compose.infra.yaml
   - services/Orders.Service
+  - services/Inventory.Service
+  - services/Payment.Service
