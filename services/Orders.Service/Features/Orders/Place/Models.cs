@@ -4,13 +4,13 @@ namespace Orders.Service.Features.Orders.Place;
 
 public class PlaceOrderRequest
 {
-    public string CustomerId { get; set; }
-    public List<OrderLine> Lines { get; set; }
+    public required string CustomerId { get; set; }
+    public required List<OrderLineSummary> Lines { get; set; }
 }
 
 public class PlaceOrderResponse
 {
-    public string OrderId { get; set; }
-    public string CorrelationId { get; set; }
-    public string Status { get; set; }
+    public required string OrderId { get; set; }
+    public required string CorrelationId { get; set; }
+    public required string Status { get; set; }
 }

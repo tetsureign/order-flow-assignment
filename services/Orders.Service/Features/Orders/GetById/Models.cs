@@ -4,13 +4,13 @@ namespace Orders.Service.Features.Orders.GetById;
 
 public class GetOrderByIdRequest
 {
-    public string OrderId { get; set; }
+    public required string OrderId { get; set; }
 }
 
 public class GetOrderByIdResponse
 {
-    public string OrderId { get; set; }
-    public string CustomerId { get; set; }
-    public List<OrderLine> Lines { get; set; }
-    public string Status { get; set; }
+    public required string OrderId { get; set; }
+    public required string CustomerId { get; set; }
+    public required List<OrderLineSummary> Lines { get; set; }
+    public required string Status { get; set; }
 }

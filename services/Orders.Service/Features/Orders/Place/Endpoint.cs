@@ -58,6 +58,7 @@ public class PlaceOrderEndpoint(ApplicationDbContext context) : Endpoint<PlaceOr
             new PlaceOrderResponse
             {
                 OrderId = order.Id.ToString(),
+                CorrelationId = outboxMessage.EventId.ToString(),
                 Status = order.Status.ToString()
             },
             cancellation: ct

@@ -30,7 +30,7 @@ public class GetOrderEndpoint(ApplicationDbContext context) : Endpoint<GetOrderB
             OrderId = order.Id.ToString(),
             CustomerId = order.CustomerId,
             Status = order.Status.ToString(),
-            Lines = order.OrderLines.Select(l => new OrderLine
+            Lines = order.OrderLines.Select(l => new OrderLineSummary
             {
                 Sku = l.Sku,
                 Quantity = l.Quantity,
