@@ -1,0 +1,54 @@
+services:
+  pulsar:
+    image: apachepulsar/pulsar:latest
+    restart: always
+    entrypoint: /bin/bash -c "bin/pulsar standalone"
+    volumes:
+      - pulsar-data:/pulsar/data
+    ports:
+      - "6650:6650"
+      - "8080:8080"
+    healthcheck:
+      test: ['CMD', 'bin/pulsar-admin', 'brokers', 'healthcheck']
+      interval: 5s
+      timeout: 10s
+      retries: 10
+    networks:
+      - pulsar-net
+
+  dekaf:
+    image: visortelle/dekaf:1.2.1
+    restart: always
+    environment:
+      DEKAF_PULSAR_WEB_URL: "http://pulsar:8080"
+      DEKAF_PULSAR_BROKER_URL: "pulsar://pulsar:6650"
+
+      # In case you're unable to observe the UI on the http://localhost:8090, probably your localhost resolves to IPv6 ::1 address. 
+      # Try to uncomment the line below and open http://127.0.0.1:8090 in your browser.
+      # DEKAF_PUBLIC_BASE_URL: "http://127.0.0.1:8090"
+    volumes:
+      - dekaf-library:/dekaf/data/library
+    ports:
+      - "8090:8090"
+    networks:
+      - pulsar-net
+
+  # dekaf-demoapp:
+  #   image: visortelle/dekaf-demoapp:1.2.1
+  #   restart: always
+  #   depends_on:
+  #     pulsar:
+  #       condition: service_healthy
+  #   environment:
+  #     DEKAF_DEMOAPP_PULSAR_WEB_URL: "http://pulsar:8080"
+  #     DEKAF_DEMOAPP_PULSAR_BROKER_URL: "pulsar://pulsar:6650"
+  #   networks:
+  #     - pulsar-net
+
+volumes:
+  pulsar-data:
+  dekaf-library:
+
+networks:
+  pulsar-net:
+    driver: bridge

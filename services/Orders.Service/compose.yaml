@@ -1,0 +1,19 @@
+services:
+  orders-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: orders_db
+      POSTGRES_USER: orders_user
+      POSTGRES_PASSWORD: secretpassword
+    ports:
+      - "5432:5432"
+
+  orders-service:
+    build:
+      context: ../..
+      dockerfile: services/Orders.Service/Dockerfile
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=orders-db;Database=orders_db;Username=orders_user;Password=secretpassword"
+      Pulsar__ServiceUrl: "pulsar://pulsar:6650"
+    depends_on:
+      - orders-db
