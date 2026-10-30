@@ -62,15 +62,64 @@ public class ReservationSucceededConsumer(
 
                     var paymentResult = await paymentService.ProcessPaymentAsync(reservationSucceeded.OrderId, reservationSucceeded.TotalAmount, stoppingToken);
 
+                    var now = DateTime.UtcNow;
+
                     if (paymentResult)
                     {
-                        // TODO
+                        var payment = new Data.Entities.Payment
+                        {
+                            OrderId = reservationSucceeded.OrderId,
+                            Amount = reservationSucceeded.TotalAmount,
+                            Status = PaymentStatus.Succeeded,
+                            CreatedAt = now
+                        };
+
+                        var paymentSucceededEvent = new PaymentSucceeded
+                        (
+                            EventId: Guid.NewGuid(),
+                            OrderId: reservationSucceeded.OrderId,
+                            PaymentId: payment.Id,
+                            Amount: payment.Amount
+                        );
+
+                        db.Payments.Add(payment);
+
+                        db.OutboxMessages.Add(new OutboxMessage
+                        {
+                            EventId = Guid.NewGuid(),
+                            Payload = JsonSerializer.Serialize(paymentSucceededEvent),
+                            PartitionKey = reservationSucceeded.OrderId.ToString(),
+                            CreatedAt = now
+                        });
                     }
                     else
                     {
-                        logger.LogError("Payment processing failed for OrderId: {OrderId}", reservationSucceeded.OrderId);
+                        var payment = new Data.Entities.Payment
+                        {
+                            OrderId = reservationSucceeded.OrderId,
+                            Amount = reservationSucceeded.TotalAmount,
+                            Status = PaymentStatus.Failed,
+                            CreatedAt = now
+                        };
 
-                        // TODO
+                        var paymentFailedEvent = new PaymentFailed
+                        (
+                            EventId: Guid.NewGuid(),
+                            OrderId: reservationSucceeded.OrderId,
+                            Reason: "Payment processing failed"
+                        );
+
+                        db.Payments.Add(payment);
+
+                        db.OutboxMessages.Add(new OutboxMessage
+                        {
+                            EventId = Guid.NewGuid(),
+                            Payload = JsonSerializer.Serialize(paymentFailedEvent),
+                            PartitionKey = reservationSucceeded.OrderId.ToString(),
+                            CreatedAt = now
+                        });
+
+                        logger.LogError("Payment processing failed for OrderId: {OrderId}", reservationSucceeded.OrderId);
                         await consumer.Acknowledge(message, stoppingToken);
                         continue;
                     }
