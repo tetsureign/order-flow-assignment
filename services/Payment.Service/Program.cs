@@ -3,6 +3,7 @@ using FastEndpoints.OpenApi;
 using FastEndpoints.Swagger;
 using Microsoft.EntityFrameworkCore;
 using Payment.Service.Data;
+using Payment.Service.Infrastructure.Payment;
 
 var bld = WebApplication.CreateBuilder(args);
 bld.Services
@@ -20,6 +21,8 @@ bld.Services.SwaggerDocument(o =>
 var connectionString = bld.Configuration.GetConnectionString("DefaultConnection") ??
                        throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 bld.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
+
+bld.Services.AddScoped<IPaymentService, FakePaymentService>();
 
 var app = bld.Build();
 
