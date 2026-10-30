@@ -2,6 +2,7 @@ using FastEndpoints;
 using FastEndpoints.OpenApi;
 using FastEndpoints.Swagger;
 using Inventory.Service.Data;
+using Inventory.Service.Infrastructure.Messaging;
 using Microsoft.EntityFrameworkCore;
 
 var bld = WebApplication.CreateBuilder(args);
@@ -20,6 +21,8 @@ bld.Services.SwaggerDocument(o =>
 var connectionString = bld.Configuration.GetConnectionString("DefaultConnection") ??
                        throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 bld.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
+bld.Services.AddHostedService<OrderPlacedConsumer>();
+bld.Services.AddHostedService<InventoryOutboxPublisher>();
 
 var app = bld.Build();
 
