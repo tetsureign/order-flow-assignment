@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/libraries/">
     <Project Path="libraries/OrderFlow.Contracts/OrderFlow.Contracts.csproj" />
+    <Project Path="libraries/OrderFlow.Messaging/OrderFlow.Messaging.csproj" />
   </Folder>
   <Folder Name="/services/">
     <Project Path="services/Inventory.Service/Inventory.Service.csproj" />
