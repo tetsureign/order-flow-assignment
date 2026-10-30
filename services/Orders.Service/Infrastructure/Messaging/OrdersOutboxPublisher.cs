@@ -1,5 +1,4 @@
 using DotPulsar;
-using DotPulsar.Abstractions;
 using DotPulsar.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Orders.Service.Data;
