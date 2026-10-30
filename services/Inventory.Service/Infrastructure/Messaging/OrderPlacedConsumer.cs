@@ -138,7 +138,8 @@ public class OrderPlacedConsumer(
                         (
                             EventId: Guid.NewGuid(),
                             OrderId: orderPlaced.OrderId,
-                            Reason: failureReason ?? "Insufficient stock"
+                            Reason: failureReason ?? "Insufficient stock",
+                            Timestamp: now
                         );
 
                         db.OutboxMessages.Add(new OutboxMessage

@@ -8,7 +8,7 @@ public sealed record OrderPlaced(
     DateTimeOffset Timestamp,
     string CustomerId,
     IReadOnlyList<OrderLineItem> Lines,
-    decimal TotalAmount)
+    decimal TotalAmount) : IIntegrationEvent
 {
     public Guid CorrelationId => OrderId;
 }

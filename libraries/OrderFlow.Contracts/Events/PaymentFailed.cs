@@ -3,7 +3,8 @@ namespace OrderFlow.Contracts.Events;
 public sealed record PaymentFailed(
     Guid EventId,
     Guid OrderId,
-    string Reason)
+    DateTimeOffset Timestamp,
+    string Reason) : IIntegrationEvent
 {
     public Guid CorrelationId => OrderId;
 }

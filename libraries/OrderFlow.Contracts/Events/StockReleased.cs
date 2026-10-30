@@ -5,7 +5,8 @@ namespace OrderFlow.Contracts.Events;
 public sealed record StockReleased(
     Guid EventId,
     Guid OrderId,
-    IReadOnlyList<OrderLineItem> ReleasedLines)
+    IReadOnlyList<OrderLineItem> ReleasedLines,
+    DateTimeOffset Timestamp) : IIntegrationEvent
 {
     public Guid CorrelationId => OrderId;
 }

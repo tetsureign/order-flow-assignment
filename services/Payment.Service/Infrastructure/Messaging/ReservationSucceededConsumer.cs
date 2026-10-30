@@ -79,7 +79,8 @@ public class ReservationSucceededConsumer(
                             EventId: Guid.NewGuid(),
                             OrderId: reservationSucceeded.OrderId,
                             PaymentId: payment.Id,
-                            Amount: payment.Amount
+                            Amount: payment.Amount,
+                            Timestamp: now
                         );
 
                         db.Payments.Add(payment);
@@ -106,7 +107,8 @@ public class ReservationSucceededConsumer(
                         (
                             EventId: Guid.NewGuid(),
                             OrderId: reservationSucceeded.OrderId,
-                            Reason: "Payment processing failed"
+                            Reason: "Payment processing failed",
+                            Timestamp: now
                         );
 
                         db.Payments.Add(payment);

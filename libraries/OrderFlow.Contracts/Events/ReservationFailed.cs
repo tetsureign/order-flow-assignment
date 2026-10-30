@@ -3,7 +3,8 @@ namespace OrderFlow.Contracts.Events;
 public sealed record ReservationFailed(
     Guid EventId,
     Guid OrderId,
-    string Reason)
+    string Reason,
+    DateTimeOffset Timestamp) : IIntegrationEvent
 {
     public Guid CorrelationId => OrderId;
 }

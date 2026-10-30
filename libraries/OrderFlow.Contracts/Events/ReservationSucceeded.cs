@@ -9,7 +9,7 @@ public sealed record ReservationSucceeded(
     DateTimeOffset Timestamp,
     IReadOnlyList<OrderLineItem> Lines,
     decimal TotalAmount
-)
+) : IIntegrationEvent
 {
     public Guid CorrelationId => OrderId;
 }
