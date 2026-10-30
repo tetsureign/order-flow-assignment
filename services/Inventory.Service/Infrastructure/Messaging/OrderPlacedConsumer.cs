@@ -119,7 +119,8 @@ public class OrderPlacedConsumer(
                             OrderId: orderPlaced.OrderId,
                             ReservationId: firstReservationId,
                             Timestamp: now,
-                            Lines: orderPlaced.Lines
+                            Lines: orderPlaced.Lines,
+                            TotalAmount: orderPlaced.TotalAmount
                         );
 
                         db.OutboxMessages.Add(new OutboxMessage

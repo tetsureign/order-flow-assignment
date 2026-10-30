@@ -7,7 +7,9 @@ public sealed record ReservationSucceeded(
     Guid OrderId,
     long ReservationId,
     DateTimeOffset Timestamp,
-    IReadOnlyList<OrderLineItem> Lines)
+    IReadOnlyList<OrderLineItem> Lines,
+    decimal TotalAmount
+)
 {
     public Guid CorrelationId => OrderId;
 }
