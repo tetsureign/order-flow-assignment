@@ -7,13 +7,14 @@ namespace OrderFlow.Messaging.Outbox;
 
 public class OutboxPublisher<TDbContext>(IServiceScopeFactory scopeFactory,
     IConfiguration configuration,
+    string topicConfigKey,
     ILogger<OutboxPublisher<TDbContext>> logger) : BackgroundService
     where TDbContext : DbContext, IOutboxDbContext
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         var serviceUrl = configuration["Pulsar:ServiceUrl"] ?? "pulsar://localhost:6650";
-        var topic = configuration["Pulsar:PublishTopic"]!;
+        var topic = configuration[topicConfigKey]!;
 
         await using var client = PulsarClient.Builder()
             .ServiceUrl(new Uri(serviceUrl))
