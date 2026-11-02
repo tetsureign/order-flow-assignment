@@ -15,5 +15,7 @@ public class ReservationFailedHandler(ApplicationDbContext db) : IIntegrationEve
 
         if (!order.TryTransitionTo(OrderStatus.Cancelled))
             throw new InvalidOperationException($"Cannot transition order {@event.OrderId} to Cancelled.");
+
+        await db.SaveChangesAsync(stoppingToken);
     }
 }
