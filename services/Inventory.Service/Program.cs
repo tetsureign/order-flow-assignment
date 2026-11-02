@@ -3,6 +3,7 @@ using FastEndpoints.OpenApi;
 using FastEndpoints.Swagger;
 using Inventory.Service.Data;
 using Inventory.Service.Features.Reservation.Handlers;
+using Inventory.Service.Features.Stock.Handlers;
 using Microsoft.EntityFrameworkCore;
 using OrderFlow.Contracts.Events;
 using OrderFlow.Messaging.Extensions;
@@ -28,7 +29,13 @@ bld.Services.AddOutboxPublisher<ApplicationDbContext>(
 );
 bld.Services.AddPulsarEventConsumer<OrderPlaced, OrderPlacedHandler, ApplicationDbContext>(
     topicConfigKey: "Pulsar:OrderEventsTopic",
-    subscriptionName: bld.Configuration["Pulsar:OrderPlacedSubscriptionName"] ?? "inventory-order-placed-sub");
+    subscriptionName: bld.Configuration["Pulsar:SubscriptionName"] ?? "inventory-subscription");
+bld.Services.AddPulsarEventConsumer<PaymentSucceeded, PaymentSucceededHandler, ApplicationDbContext>(
+    topicConfigKey: "Pulsar:PaymentEventsTopic",
+    subscriptionName: bld.Configuration["Pulsar:SubscriptionName"] ?? "inventory-subscription");
+bld.Services.AddPulsarEventConsumer<PaymentFailed, PaymentFailedHandler, ApplicationDbContext>(
+    topicConfigKey: "Pulsar:PaymentEventsTopic",
+    subscriptionName: bld.Configuration["Pulsar:SubscriptionName"] ?? "inventory-subscription");
 
 var app = bld.Build();
 
