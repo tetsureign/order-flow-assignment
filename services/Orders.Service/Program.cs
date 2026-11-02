@@ -3,7 +3,7 @@ using FastEndpoints.OpenApi;
 using FastEndpoints.Swagger;
 using Microsoft.EntityFrameworkCore;
 using Orders.Service.Data;
-using Orders.Service.Infrastructure.Messaging;
+using OrderFlow.Messaging.Extensions;
 
 var bld = WebApplication.CreateBuilder(args);
 bld.Services
@@ -21,8 +21,9 @@ bld.Services.SwaggerDocument(o =>
 var connectionString = bld.Configuration.GetConnectionString("DefaultConnection") ??
                        throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 bld.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
-
-bld.Services.AddHostedService<OrdersOutboxPublisher>();
+bld.Services.AddOutboxPublisher<ApplicationDbContext>(
+    topicConfigKey: "Pulsar:PublishTopic"
+);
 
 var app = bld.Build();
 
