@@ -2,8 +2,10 @@ using FastEndpoints;
 using FastEndpoints.OpenApi;
 using FastEndpoints.Swagger;
 using Inventory.Service.Data;
-using Inventory.Service.Infrastructure.Messaging;
+using Inventory.Service.Features.Reservation.Handlers;
 using Microsoft.EntityFrameworkCore;
+using OrderFlow.Contracts.Events;
+using OrderFlow.Messaging.Extensions;
 
 var bld = WebApplication.CreateBuilder(args);
 bld.Services
@@ -21,8 +23,12 @@ bld.Services.SwaggerDocument(o =>
 var connectionString = bld.Configuration.GetConnectionString("DefaultConnection") ??
                        throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 bld.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
-bld.Services.AddHostedService<OrderPlacedConsumer>();
-bld.Services.AddHostedService<InventoryOutboxPublisher>();
+bld.Services.AddOutboxPublisher<ApplicationDbContext>(
+    topicConfigKey: "Pulsar:PublishTopic"
+);
+bld.Services.AddPulsarEventConsumer<OrderPlaced, OrderPlacedHandler, ApplicationDbContext>(
+    topicConfigKey: "Pulsar:OrderEventsTopic",
+    subscriptionName: bld.Configuration["Pulsar:OrderPlacedSubscriptionName"] ?? "inventory-order-placed-sub");
 
 var app = bld.Build();
 
