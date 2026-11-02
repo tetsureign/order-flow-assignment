@@ -20,4 +20,28 @@ public class Order
 
     public List<OrderLine> OrderLines { get; set; } = [];
     public OrderSagaState? SagaState { get; set; }
+
+    public bool CanTransitionTo(OrderStatus nextStatus)
+    {
+        return Status switch
+        {
+            OrderStatus.Pending => nextStatus is OrderStatus.Reserving or OrderStatus.Cancelled,
+            OrderStatus.Reserving => nextStatus is OrderStatus.Charging or OrderStatus.Cancelled,
+            OrderStatus.Charging => nextStatus is OrderStatus.Confirmed or OrderStatus.Cancelled,
+            _ => false
+        };
+    }
+
+    public bool TryTransitionTo(OrderStatus nextStatus)
+    {
+        if (Status == OrderStatus.Confirmed || Status == OrderStatus.Cancelled)
+            return false;
+
+        if (!CanTransitionTo(nextStatus))
+            throw new InvalidOperationException($"Cannot transition order {Id} from {Status} to {nextStatus}.");
+
+        Status = nextStatus;
+        UpdatedAt = DateTime.UtcNow;
+        return true;
+    }
 }
