@@ -4,6 +4,8 @@ using FastEndpoints.Swagger;
 using Microsoft.EntityFrameworkCore;
 using Orders.Service.Data;
 using OrderFlow.Messaging.Extensions;
+using Orders.Service.Features.Orders.Handlers;
+using OrderFlow.Contracts.Events;
 
 var bld = WebApplication.CreateBuilder(args);
 bld.Services
@@ -23,6 +25,22 @@ var connectionString = bld.Configuration.GetConnectionString("DefaultConnection"
 bld.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
 bld.Services.AddOutboxPublisher<ApplicationDbContext>(
     topicConfigKey: "Pulsar:PublishTopic"
+);
+bld.Services.AddPulsarEventConsumer<ReservationSucceeded, ReservationSucceededHandler, ApplicationDbContext>(
+    topicConfigKey: "Pulsar:InventoryEventsTopic",
+    subscriptionName: bld.Configuration["Pulsar:SubscriptionName"] ?? "orders-subscription"
+);
+bld.Services.AddPulsarEventConsumer<ReservationFailed, ReservationFailedHandler, ApplicationDbContext>(
+    topicConfigKey: "Pulsar:InventoryEventsTopic",
+    subscriptionName: bld.Configuration["Pulsar:SubscriptionName"] ?? "orders-subscription"
+);
+bld.Services.AddPulsarEventConsumer<PaymentSucceeded, PaymentSucceededHandler, ApplicationDbContext>(
+    topicConfigKey: "Pulsar:PaymentEventsTopic",
+    subscriptionName: bld.Configuration["Pulsar:SubscriptionName"] ?? "orders-subscription"
+);
+bld.Services.AddPulsarEventConsumer<PaymentFailed, PaymentFailedHandler, ApplicationDbContext>(
+    topicConfigKey: "Pulsar:PaymentEventsTopic",
+    subscriptionName: bld.Configuration["Pulsar:SubscriptionName"] ?? "orders-subscription"
 );
 
 var app = bld.Build();

@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Payment.Service.Data;
 using Payment.Service.Infrastructure.Payment;
 using OrderFlow.Messaging.Extensions;
+using OrderFlow.Contracts.Events;
+using Payment.Service.Features.Payments.Handlers;
 
 var bld = WebApplication.CreateBuilder(args);
 bld.Services
@@ -20,12 +22,16 @@ bld.Services.SwaggerDocument(o =>
 });
 
 var connectionString = bld.Configuration.GetConnectionString("DefaultConnection") ??
-                       throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+                        throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 bld.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
+bld.Services.AddScoped<IPaymentService, FakePaymentService>();
 bld.Services.AddOutboxPublisher<ApplicationDbContext>(
     topicConfigKey: "Pulsar:PublishTopic"
 );
-bld.Services.AddScoped<IPaymentService, FakePaymentService>();
+bld.Services.AddPulsarEventConsumer<ReservationSucceeded, ReservationSucceededHandler, ApplicationDbContext>(
+    topicConfigKey: "Pulsar:InventoryEventsTopic",
+    subscriptionName: bld.Configuration["Pulsar:SubscriptionName"] ?? "payment-subscription"
+);
 
 var app = bld.Build();
 
