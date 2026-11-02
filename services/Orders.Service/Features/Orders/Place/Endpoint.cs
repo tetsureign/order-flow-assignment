@@ -5,10 +5,11 @@ using OrderFlow.Contracts.Events.Shared;
 using Orders.Service.Data;
 using Orders.Service.Data.Entities;
 using OrderFlow.Messaging.Entities;
+using OrderFlow.Messaging.Abstractions;
 
 namespace Orders.Service.Features.Orders.Place;
 
-public class PlaceOrderEndpoint(ApplicationDbContext context) : Endpoint<PlaceOrderRequest, PlaceOrderResponse>
+public class PlaceOrderEndpoint(ApplicationDbContext db, IOutbox outbox) : Endpoint<PlaceOrderRequest, PlaceOrderResponse>
 {
     public override void Configure()
     {
@@ -22,7 +23,7 @@ public class PlaceOrderEndpoint(ApplicationDbContext context) : Endpoint<PlaceOr
         {
             CustomerId = req.CustomerId,
             TotalAmount = req.Lines.Sum(i => i.Quantity * i.UnitPrice),
-            Status = OrderStatus.Pending,
+            Status = OrderStatus.Reserving,
             OrderLines = req.Lines.Select(i => new OrderLine
             {
                 Sku = i.Sku,
@@ -47,18 +48,10 @@ public class PlaceOrderEndpoint(ApplicationDbContext context) : Endpoint<PlaceOr
                 .ToList(),
             TotalAmount: order.TotalAmount);
 
-        var outboxMessage = new OutboxMessage
-        {
-            EventId = orderPlacedEvent.EventId,
-            Topic = "persistent://public/default/order-events",
-            PartitionKey = order.Id.ToString(),
-            Payload = JsonSerializer.Serialize(orderPlacedEvent),
-            CreatedAt = timestamp.UtcDateTime
-        };
+        outbox.Enqueue(orderPlacedEvent);
 
-        context.Add(order);
-        context.Add(outboxMessage);
-        await context.SaveChangesAsync(ct);
+        db.Add(order);
+        await db.SaveChangesAsync(ct);
 
         await Send.AcceptedAtAsync($"/orders/{order.Id}",
             new PlaceOrderResponse
