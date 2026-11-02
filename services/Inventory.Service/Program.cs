@@ -29,13 +29,13 @@ bld.Services.AddOutboxPublisher<ApplicationDbContext>(
 );
 bld.Services.AddPulsarEventConsumer<OrderPlaced, OrderPlacedHandler, ApplicationDbContext>(
     topicConfigKey: "Pulsar:OrderEventsTopic",
-    subscriptionName: bld.Configuration["Pulsar:SubscriptionName"] ?? "inventory-subscription");
+    subscriptionName: "inventory-order-placed-sub");
 bld.Services.AddPulsarEventConsumer<PaymentSucceeded, PaymentSucceededHandler, ApplicationDbContext>(
     topicConfigKey: "Pulsar:PaymentEventsTopic",
-    subscriptionName: bld.Configuration["Pulsar:SubscriptionName"] ?? "inventory-subscription");
+    subscriptionName: "inventory-payment-succeeded-sub");
 bld.Services.AddPulsarEventConsumer<PaymentFailed, PaymentFailedHandler, ApplicationDbContext>(
     topicConfigKey: "Pulsar:PaymentEventsTopic",
-    subscriptionName: bld.Configuration["Pulsar:SubscriptionName"] ?? "inventory-subscription");
+    subscriptionName: "inventory-payment-failed-sub");
 
 var app = bld.Build();
 

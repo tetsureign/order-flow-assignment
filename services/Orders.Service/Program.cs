@@ -28,19 +28,19 @@ bld.Services.AddOutboxPublisher<ApplicationDbContext>(
 );
 bld.Services.AddPulsarEventConsumer<ReservationSucceeded, ReservationSucceededHandler, ApplicationDbContext>(
     topicConfigKey: "Pulsar:InventoryEventsTopic",
-    subscriptionName: bld.Configuration["Pulsar:SubscriptionName"] ?? "orders-subscription"
+    subscriptionName: "orders-reservation-succeeded-sub"
 );
 bld.Services.AddPulsarEventConsumer<ReservationFailed, ReservationFailedHandler, ApplicationDbContext>(
     topicConfigKey: "Pulsar:InventoryEventsTopic",
-    subscriptionName: bld.Configuration["Pulsar:SubscriptionName"] ?? "orders-subscription"
+    subscriptionName: "orders-reservation-failed-sub"
 );
 bld.Services.AddPulsarEventConsumer<PaymentSucceeded, PaymentSucceededHandler, ApplicationDbContext>(
     topicConfigKey: "Pulsar:PaymentEventsTopic",
-    subscriptionName: bld.Configuration["Pulsar:SubscriptionName"] ?? "orders-subscription"
+    subscriptionName: "orders-payment-succeeded-sub"
 );
 bld.Services.AddPulsarEventConsumer<PaymentFailed, PaymentFailedHandler, ApplicationDbContext>(
     topicConfigKey: "Pulsar:PaymentEventsTopic",
-    subscriptionName: bld.Configuration["Pulsar:SubscriptionName"] ?? "orders-subscription"
+    subscriptionName: "orders-payment-failed-sub"
 );
 
 var app = bld.Build();

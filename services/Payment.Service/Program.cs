@@ -30,7 +30,7 @@ bld.Services.AddOutboxPublisher<ApplicationDbContext>(
 );
 bld.Services.AddPulsarEventConsumer<ReservationSucceeded, ReservationSucceededHandler, ApplicationDbContext>(
     topicConfigKey: "Pulsar:InventoryEventsTopic",
-    subscriptionName: bld.Configuration["Pulsar:SubscriptionName"] ?? "payment-subscription"
+    subscriptionName: "payment-reservation-succeeded-sub"
 );
 
 var app = bld.Build();
