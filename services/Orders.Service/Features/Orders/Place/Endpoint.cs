@@ -4,6 +4,7 @@ using OrderFlow.Contracts.Events;
 using OrderFlow.Contracts.Events.Shared;
 using Orders.Service.Data;
 using Orders.Service.Data.Entities;
+using OrderFlow.Messaging.Entities;
 
 namespace Orders.Service.Features.Orders.Place;
 
@@ -34,7 +35,7 @@ public class PlaceOrderEndpoint(ApplicationDbContext context) : Endpoint<PlaceOr
                 PaymentCompleted = false
             }
         };
-        
+
         var timestamp = DateTimeOffset.UtcNow;
 
         var orderPlacedEvent = new OrderPlaced(EventId: Guid.NewGuid(),

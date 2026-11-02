@@ -23,7 +23,7 @@ namespace Payment.Service.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Payment.Service.Data.Entities.InboxMessage", b =>
+            modelBuilder.Entity("OrderFlow.Messaging.Entities.InboxMessage", b =>
                 {
                     b.Property<Guid>("EventId")
                         .ValueGeneratedOnAdd()
@@ -40,7 +40,7 @@ namespace Payment.Service.Migrations
                     b.ToTable("inbox_messages", "orderflow_payments");
                 });
 
-            modelBuilder.Entity("Payment.Service.Data.Entities.OutboxMessage", b =>
+            modelBuilder.Entity("OrderFlow.Messaging.Entities.OutboxMessage", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()

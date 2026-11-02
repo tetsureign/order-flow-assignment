@@ -2,8 +2,10 @@ namespace Payment.Service.Data;
 
 using Microsoft.EntityFrameworkCore;
 using Payment.Service.Data.Entities;
+using OrderFlow.Messaging.Abstractions;
+using OrderFlow.Messaging.Entities;
 
-public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options), IOutboxDbContext
 {
     public DbSet<Payment> Payments => Set<Payment>();
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();

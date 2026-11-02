@@ -2,8 +2,10 @@ namespace Orders.Service.Data;
 
 using Microsoft.EntityFrameworkCore;
 using Orders.Service.Data.Entities;
+using OrderFlow.Messaging.Abstractions;
+using OrderFlow.Messaging.Entities;
 
-public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options), IOutboxDbContext
 {
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<OrderLine> OrderLines => Set<OrderLine>();

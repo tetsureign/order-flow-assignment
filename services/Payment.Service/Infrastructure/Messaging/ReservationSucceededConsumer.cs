@@ -6,6 +6,7 @@ using Payment.Service.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using OrderFlow.Contracts.Events;
 using Payment.Service.Infrastructure.Payment;
+using OrderFlow.Messaging.Entities;
 
 namespace Payment.Service.Infrastructure.Messaging;
 

@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\libraries\OrderFlow.Contracts\OrderFlow.Contracts.csproj" />
+    <ProjectReference Include="..\..\libraries\OrderFlow.Messaging\OrderFlow.Messaging.csproj" />
   </ItemGroup>
 
 </Project>

@@ -23,7 +23,7 @@ namespace Orders.Service.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Orders.Service.Data.Entities.InboxMessage", b =>
+            modelBuilder.Entity("OrderFlow.Messaging.Entities.InboxMessage", b =>
                 {
                     b.Property<Guid>("EventId")
                         .ValueGeneratedOnAdd()
@@ -38,6 +38,53 @@ namespace Orders.Service.Migrations
                         .HasName("pk_inbox_messages");
 
                     b.ToTable("inbox_messages", "orderflow_orders");
+                });
+
+            modelBuilder.Entity("OrderFlow.Messaging.Entities.OutboxMessage", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("event_id");
+
+                    b.Property<string>("PartitionKey")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("partition_key");
+
+                    b.Property<string>("Payload")
+                        .IsRequired()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("payload");
+
+                    b.Property<DateTime?>("PublishedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("published_at");
+
+                    b.Property<string>("Topic")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("topic");
+
+                    b.HasKey("Id")
+                        .HasName("pk_outbox_messages");
+
+                    b.HasIndex("EventId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_outbox_messages_event_id");
+
+                    b.ToTable("outbox_messages", "orderflow_orders");
                 });
 
             modelBuilder.Entity("Orders.Service.Data.Entities.Order", b =>
@@ -136,53 +183,6 @@ namespace Orders.Service.Migrations
                         .HasName("pk_order_saga_states");
 
                     b.ToTable("order_saga_states", "orderflow_orders");
-                });
-
-            modelBuilder.Entity("Orders.Service.Data.Entities.OutboxMessage", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<Guid>("EventId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("event_id");
-
-                    b.Property<string>("PartitionKey")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("partition_key");
-
-                    b.Property<string>("Payload")
-                        .IsRequired()
-                        .HasColumnType("jsonb")
-                        .HasColumnName("payload");
-
-                    b.Property<DateTime?>("PublishedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("published_at");
-
-                    b.Property<string>("Topic")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("topic");
-
-                    b.HasKey("Id")
-                        .HasName("pk_outbox_messages");
-
-                    b.HasIndex("EventId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_outbox_messages_event_id");
-
-                    b.ToTable("outbox_messages", "orderflow_orders");
                 });
 
             modelBuilder.Entity("Orders.Service.Data.Entities.OrderLine", b =>

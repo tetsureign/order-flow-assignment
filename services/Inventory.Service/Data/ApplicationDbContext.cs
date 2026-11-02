@@ -2,8 +2,10 @@ namespace Inventory.Service.Data;
 
 using Inventory.Service.Data.Entities;
 using Microsoft.EntityFrameworkCore;
+using OrderFlow.Messaging.Abstractions;
+using OrderFlow.Messaging.Entities;
 
-public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options), IOutboxDbContext
 {
     public DbSet<StockItem> StockItems => Set<StockItem>();
     public DbSet<Reservation> Reservations => Set<Reservation>();
