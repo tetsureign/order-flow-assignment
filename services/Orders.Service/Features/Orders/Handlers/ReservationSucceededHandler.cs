@@ -2,6 +2,7 @@ using OrderFlow.Contracts.Events;
 using OrderFlow.Messaging.Abstractions;
 using Orders.Service.Data;
 using Orders.Service.Data.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Orders.Service.Features.Orders.Handlers;
 
@@ -9,7 +10,9 @@ public class ReservationSucceededHandler(ApplicationDbContext db) : IIntegration
 {
     public async Task HandleAsync(ReservationSucceeded @event, CancellationToken stoppingToken)
     {
-        var order = await db.Orders.FindAsync([@event.OrderId], stoppingToken)
+        var order = await db.Orders
+            .Include(o => o.SagaState)
+            .FirstOrDefaultAsync(o => o.Id == @event.OrderId, stoppingToken)
             ?? throw new InvalidOperationException($"Order with ID {@event.OrderId} not found.");
 
         if (!order.TryTransitionTo(OrderStatus.Charging))
